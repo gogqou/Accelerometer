@@ -255,6 +255,7 @@ def main():
     cvstats = mycv(clf,df,nfolds=5)
     
     print cvstats
+    print cvstats['cv']
     plt.figure()
     show_conf_mat(cvstats)
     
