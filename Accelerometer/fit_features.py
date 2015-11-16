@@ -81,6 +81,7 @@ def get_features(trials, downsample=1):
                 'corrxy','corrxz','corryz')
 
     df = pd.DataFrame(index=np.arange(0,len(trials)),columns=features)
+    print df
     tmp = {}
     for i,trial in enumerate(trials):
         if not i%100:
