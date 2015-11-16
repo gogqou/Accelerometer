@@ -72,7 +72,7 @@ def log_loss(y_true,y_pred):
     y_pred = np.minimum(1-eps,y_pred)
     return -np.sum(np.log(y_pred[range(len(y_true)),y_true.astype(int)]))/len(y_true)
 
-def get_features(trials, downsample=1):
+def get_features(trial, downsample=1):
 
     features = ('target','meanx','meany','meanz','mean',
                 'varx','vary','varz','var',
@@ -80,33 +80,26 @@ def get_features(trials, downsample=1):
                 'kurtx','kurty','kurtz','kurt',
                 'corrxy','corrxz','corryz')
 
-    df = pd.DataFrame(index=np.arange(0,len(trials)),columns=features)
-    print df
     tmp = {}
-    for i,trial in enumerate(trials):
-        if not i%100:
-            print i
-        data = trial['data']
-        data1d = np.sqrt((data**2).sum(axis=1)) #take magnitude of acc.
+    data = trial['data']
+    data1d = np.sqrt((data**2).sum(axis=1)) #take magnitude of acc.
+    
+    tmp['target'] = trial['activity']
+    data = trial['data'][::downsample,:]
+    data1d = np.sqrt((data**2).sum(axis=1))
+    tmp['meanx'],tmp['meany'],tmp['meanz'] = data.mean(axis=0)
+    tmp['mean'] = data1d.mean()
+    tmp['varx'],tmp['vary'],tmp['varz'] = data.var(axis=0)
+    tmp['var'] = data1d.var()
+    tmp['skewx'],tmp['skewy'],tmp['skewz'] = skew(data,axis=0)
+    tmp['skew'] = skew(data1d)
+    tmp['kurtx'],tmp['kurty'],tmp['kurtz'] = kurtosis(data,axis=0)
+    tmp['kurt'] = kurtosis(data1d)
+    tmp['corrxy'] = pearsonr(data[:,0],data[:,1])[0]
+    tmp['corrxz'] = pearsonr(data[:,0],data[:,2])[0]
+    tmp['corryz'] = pearsonr(data[:,1],data[:,2])[0]
         
-        tmp['target'] = trial['activity']
-        data = trial['data'][::downsample,:]
-        data1d = np.sqrt((data**2).sum(axis=1))
-        tmp['meanx'],tmp['meany'],tmp['meanz'] = data.mean(axis=0)
-        tmp['mean'] = data1d.mean()
-        tmp['varx'],tmp['vary'],tmp['varz'] = data.var(axis=0)
-        tmp['var'] = data1d.var()
-        tmp['skewx'],tmp['skewy'],tmp['skewz'] = skew(data,axis=0)
-        tmp['skew'] = skew(data1d)
-        tmp['kurtx'],tmp['kurty'],tmp['kurtz'] = kurtosis(data,axis=0)
-        tmp['kurt'] = kurtosis(data1d)
-        tmp['corrxy'] = pearsonr(data[:,0],data[:,1])[0]
-        tmp['corrxz'] = pearsonr(data[:,0],data[:,2])[0]
-        tmp['corryz'] = pearsonr(data[:,1],data[:,2])[0]
-        
-        df.loc[i] = tmp
-        print df.loc[i]
-    return df
+    return tmp
 
 def mycv(clf,df,cv=None,nfolds=5,w=None,N=20):
     target = df['target']
@@ -257,7 +250,7 @@ def main():
     clf = GradientBoostingClassifier(**params)
    
     trials = load_data(base_path,filter=['Eat_soup','Eat_meat'],downsample=1)
-    df = get_features(trials)
+    df = pd.DataFrame(get_features(trial) for trial in trials)
     
     #cvstats = mycv(clf,df,nfolds=5)
     
