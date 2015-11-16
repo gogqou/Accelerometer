@@ -74,12 +74,13 @@ def log_loss(y_true,y_pred):
 
 def get_features(trial, downsample=1):
 
+    '''
     features = ('target','meanx','meany','meanz','mean',
                 'varx','vary','varz','var',
                 'skewx','skewy','skewz','skew',
                 'kurtx','kurty','kurtz','kurt',
                 'corrxy','corrxz','corryz')
-
+    '''
     tmp = {}
     data = trial['data']
     data1d = np.sqrt((data**2).sum(axis=1)) #take magnitude of acc.
@@ -98,7 +99,6 @@ def get_features(trial, downsample=1):
     tmp['corrxy'] = pearsonr(data[:,0],data[:,1])[0]
     tmp['corrxz'] = pearsonr(data[:,0],data[:,2])[0]
     tmp['corryz'] = pearsonr(data[:,1],data[:,2])[0]
-        
     return tmp
 
 def mycv(clf,df,cv=None,nfolds=5,w=None,N=20):
@@ -116,7 +116,7 @@ def mycv(clf,df,cv=None,nfolds=5,w=None,N=20):
     for train_idx, valid_idx in cv:
         Xtrain, ytrain = data[train_idx,:], target[train_idx]
         Xtest, ytest = data[valid_idx,:], target[valid_idx]
-        print Xtest
+        #print Xtest
         #clf.fit(Xtrain,ytrain,sample_weight=w)
         clf.fit(Xtrain,ytrain)
         ypred = clf.predict(Xtest)
@@ -252,12 +252,14 @@ def main():
     trials = load_data(base_path,filter=['Eat_soup','Eat_meat'],downsample=1)
     df = pd.DataFrame(get_features(trial) for trial in trials)
     
-    #cvstats = mycv(clf,df,nfolds=5)
+    cvstats = mycv(clf,df,nfolds=5)
+    
+    print cvstats
+    plt.figure()
+    show_conf_mat(cvstats)
     
     
-    #plt.figure()
-    #show_conf_mat(cvstats)
-     
+    ''' 
     
     df['target'] = df['target'].apply(lambda x: group_dict[x])
      
@@ -268,7 +270,7 @@ def main():
      
     plt.figure()
     show_feat_importance(cvstats)
-    
+    '''
     return 1
 if __name__ == '__main__':
     main()
