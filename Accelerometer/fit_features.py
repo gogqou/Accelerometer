@@ -220,9 +220,11 @@ def show_feat_importance(cvstats,N=20):
     plt.title('Feature Importance')
     plt.savefig('Feature Importance'+'.png', format='png')
     
-base_path = '/home/gogqou/git/CDIPS-Project/HMP_Dataset/'
 
-group_dict = {'Brush_teeth':'Brush teeth',
+def main():
+    base_path = '/home/gogqou/git/CDIPS-Project/HMP_Dataset/'
+
+    group_dict = {'Brush_teeth':'Brush teeth',
               'Comb_hair':'Comb hair',
               'Use_telephone':'Use telephone',
               'Sitdown_chair':'Posture change',
@@ -234,43 +236,40 @@ group_dict = {'Brush_teeth':'Brush teeth',
               'Descend_stairs':'Locomotion',
               'Climb_stairs':'Locomotion',
               'Walk':'Locomotion'}
-'''
-param = ('eta': 0.3,'eval_metric': 'mlogloss','gamma': 0,
-         'max_delta_step': 0,'max_depth': 3,'min_child_weight': 1,'num_class': 12,
-         'num_round': 300,'objective': 'multi:softprob','silent': 1,subsample= 1)
 
-'''
-params = {'subsample': 1.0, 'max_depth': 3,
-        'learning_rate': 0.1, 'loss': 'deviance'}
+    params = {'subsample': 1.0, 'max_depth': 3, 'learning_rate': 0.1, 'loss': 'deviance'}
 
-def main():
     
     clf = GradientBoostingClassifier(**params)
    
     trials = load_data(base_path,filter=['Eat_soup','Eat_meat'],downsample=1)
     print 'loaded trials'
     df = pd.DataFrame(get_features(trial) for trial in trials)
-    print 'dataframe'
+    print 'constructed dataframe'
     
     cvstats = mycv(clf,df,nfolds=5)
-    print 'done cvstats'
-    print cvstats
+    print 'done cross validation'
+    print 'Confusion Matrix:'
+    print cvstats['cm']
+    print 'Classes: '
+    print cvstats['classes']
     
     plt.figure()
     show_conf_mat(cvstats, '_Raw')
-    
-    
-    
-    
+    print 'raw confusion matrix'
     df['target'] = df['target'].apply(lambda x: group_dict[x])
-     
+    print 'grouped activities' 
     cvstats = mycv(clf,df,nfolds=5)
      
     plt.figure()
     show_conf_mat(cvstats, '_Grouped')
-    
+    print 'done cross validation'
+    print 'Confusion Matrix, Grouped :'
+    print cvstats['cm']
+    print 'Classes: '
+    print cvstats['classes']
+    print 'done confusion matrix'
     plt.figure()
-    print 'figure'
     show_feat_importance(cvstats)
     
     return 1
