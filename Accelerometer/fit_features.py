@@ -20,7 +20,7 @@ from sklearn.ensemble import GradientBoostingClassifier
 import seaborn as sns
 import scipy.cluster.hierarchy as sch
 from matplotlib.patches import Rectangle
-import pylab
+import os.path as path
 sns.set()
 
 fs = 32.0
@@ -86,7 +86,18 @@ def get_features(trial, downsample=1):
     tmp = {}
     data = trial['data']
     data1d = np.sqrt((data**2).sum(axis=1)) #take magnitude of acc.
-    
+    fig=plt.figure()
+    fig.add_subplot(311)
+    plt.plot(data[:,0])
+    fig.add_subplot(312)
+    plt.plot(data[:,1])
+    fig.add_subplot(313)
+    plt.plot(data[:,2])
+    if path.isfile(trial['activity']+trial['iden']+'.png')is False:
+        plt.savefig(trial['activity']+trial['iden']+'.png', format='png')
+        print 'saved '+trial['activity']+'_'+trial['iden']+'.png'
+
+    plt.close()
     tmp['target'] = trial['activity']
     data = trial['data'][::downsample,:]
     data1d = np.sqrt((data**2).sum(axis=1))
