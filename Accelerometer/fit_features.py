@@ -136,7 +136,7 @@ def mycv(clf,df,cv=None,nfolds=5,w=None,N=20):
     return {'ll':ll,'acc':acc,'accstd':accstd,'fi':fi,'cm':cm,'cmstd':cmstd,'cmn':cmn,'features':features,'classes':le.classes_}
 
 
-def show_conf_mat(cvstats):
+def show_conf_mat(cvstats, datasetname):
     
     cmn = cvstats['cmn']
     labels = cvstats['classes']
@@ -203,7 +203,7 @@ def show_conf_mat(cvstats):
     plt.axis('off')
 
     plt.gcf().colorbar(im,cax=cax)
-    plt.show()
+    plt.savefig('Confusion Matrix'+datasetname, format='png')
 def show_feat_importance(cvstats,N=20):
     #fig=plt.figure()
     fi,features = cvstats['fi'],cvstats['features']
@@ -218,7 +218,7 @@ def show_feat_importance(cvstats,N=20):
     #plt.barh(pos,fi[srtd_idx[:N]],align='center')
     plt.yticks(pos,np.array(features)[srtd_idx[:N]])
     plt.title('Feature Importance')
-    plt.show()
+    plt.savefig('Feature Importance', format='png')
     
 base_path = '/home/gogqou/git/CDIPS-Project/HMP_Dataset/'
 
@@ -257,7 +257,7 @@ def main():
     print cvstats
     
     plt.figure()
-    show_conf_mat(cvstats)
+    show_conf_mat(cvstats, '_Raw')
     
     
     
@@ -267,7 +267,7 @@ def main():
     cvstats = mycv(clf,df,nfolds=5)
      
     plt.figure()
-    show_conf_mat(cvstats)
+    show_conf_mat(cvstats, '_Grouped')
     
     plt.figure()
     print 'figure'
