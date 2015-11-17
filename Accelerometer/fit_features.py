@@ -19,6 +19,8 @@ import random
 from scipy.stats import skew,kurtosis,mode, pearsonr
 from sklearn.ensemble import GradientBoostingClassifier
 import seaborn as sns
+import scipy.cluster.hierarchy as sch
+from matplotlib.patches import Rectangle
 sns.set()
 
 fs = 32.0
@@ -140,9 +142,6 @@ def show_conf_mat(cvstats):
     labels = cvstats['classes']
     labels = np.array([x.replace('_',' ') for x in labels])
 
-    import scipy.cluster.hierarchy as sch
-    from matplotlib.patches import Rectangle
-
     cluster_threshold = .7
 
     ax2 = plt.gcf().add_axes([0.3,0.8,0.6,0.05])
@@ -206,19 +205,23 @@ def show_conf_mat(cvstats):
     plt.gcf().colorbar(im,cax=cax)
     
 def show_feat_importance(cvstats,N=20):
-    
+    #fig=plt.figure()
     fi,features = cvstats['fi'],cvstats['features']
-    
     fi,fistd = fi.mean(axis=0),fi.std(axis=0)
     sc = max(fi)
     fi /= sc
     fistd /= sc
     srtd_idx = np.argsort(fi)[::-1]
+    print srtd_idx
     N = min(N,len(fi))
-    
+    print '4'
     pos = (np.arange(N) + 0.5)[::-1]
-    _=plt.barh(pos,fi[srtd_idx[:N]],align='center')
+    print '5'
+    #_=plt.barh(pos,fi[srtd_idx[:N]],align='center')
+    plt.barh(pos,fi[srtd_idx[:N]],align='center')
+    print '6'
     plt.yticks(pos,np.array(features)[srtd_idx[:N]])
+    print '7'
     plt.title('Feature Importance')
     
     
@@ -253,12 +256,13 @@ def main():
     df = pd.DataFrame(get_features(trial) for trial in trials)
     
     cvstats = mycv(clf,df,nfolds=5)
-    
+    print 'done cvstats'
     print cvstats
-    print cvstats['cv']
+    print 'print'
+    '''
     plt.figure()
     show_conf_mat(cvstats)
-    
+    '''
     
     ''' 
     
@@ -268,10 +272,11 @@ def main():
      
     plt.figure()
     show_conf_mat(cvstats)
-     
-    plt.figure()
+    ''' 
+    #fig=plt.figure()
+    #print 'figure'
     show_feat_importance(cvstats)
-    '''
+    
     return 1
 if __name__ == '__main__':
     main()
