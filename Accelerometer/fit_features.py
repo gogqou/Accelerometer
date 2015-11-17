@@ -13,7 +13,6 @@ import matplotlib.pyplot as plt
 from sklearn.preprocessing import LabelEncoder
 import re
 import os
-import librosa
 import scipy.signal as signal
 import random
 from scipy.stats import skew,kurtosis,mode, pearsonr
@@ -21,6 +20,7 @@ from sklearn.ensemble import GradientBoostingClassifier
 import seaborn as sns
 import scipy.cluster.hierarchy as sch
 from matplotlib.patches import Rectangle
+import pylab
 sns.set()
 
 fs = 32.0
@@ -203,7 +203,7 @@ def show_conf_mat(cvstats):
     plt.axis('off')
 
     plt.gcf().colorbar(im,cax=cax)
-    
+    plt.show()
 def show_feat_importance(cvstats,N=20):
     #fig=plt.figure()
     fi,features = cvstats['fi'],cvstats['features']
@@ -212,18 +212,13 @@ def show_feat_importance(cvstats,N=20):
     fi /= sc
     fistd /= sc
     srtd_idx = np.argsort(fi)[::-1]
-    print srtd_idx
     N = min(N,len(fi))
-    print '4'
     pos = (np.arange(N) + 0.5)[::-1]
-    print '5'
-    #_=plt.barh(pos,fi[srtd_idx[:N]],align='center')
-    plt.barh(pos,fi[srtd_idx[:N]],align='center')
-    print '6'
+    _=plt.barh(pos,fi[srtd_idx[:N]],align='center')
+    #plt.barh(pos,fi[srtd_idx[:N]],align='center')
     plt.yticks(pos,np.array(features)[srtd_idx[:N]])
-    print '7'
     plt.title('Feature Importance')
-    
+    plt.show()
     
 base_path = '/home/gogqou/git/CDIPS-Project/HMP_Dataset/'
 
@@ -253,18 +248,19 @@ def main():
     clf = GradientBoostingClassifier(**params)
    
     trials = load_data(base_path,filter=['Eat_soup','Eat_meat'],downsample=1)
+    print 'loaded trials'
     df = pd.DataFrame(get_features(trial) for trial in trials)
+    print 'dataframe'
     
     cvstats = mycv(clf,df,nfolds=5)
     print 'done cvstats'
     print cvstats
-    print 'print'
-    '''
+    
     plt.figure()
     show_conf_mat(cvstats)
-    '''
     
-    ''' 
+    
+    
     
     df['target'] = df['target'].apply(lambda x: group_dict[x])
      
@@ -272,9 +268,9 @@ def main():
      
     plt.figure()
     show_conf_mat(cvstats)
-    ''' 
-    #fig=plt.figure()
-    #print 'figure'
+    
+    plt.figure()
+    print 'figure'
     show_feat_importance(cvstats)
     
     return 1
