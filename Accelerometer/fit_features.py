@@ -203,7 +203,7 @@ def show_conf_mat(cvstats, datasetname):
     plt.axis('off')
 
     plt.gcf().colorbar(im,cax=cax)
-    plt.savefig('Confusion Matrix'+datasetname, format='png')
+    plt.savefig('Confusion Matrix'+datasetname+'.png', format='png')
 def show_feat_importance(cvstats,N=20):
     #fig=plt.figure()
     fi,features = cvstats['fi'],cvstats['features']
@@ -218,7 +218,7 @@ def show_feat_importance(cvstats,N=20):
     #plt.barh(pos,fi[srtd_idx[:N]],align='center')
     plt.yticks(pos,np.array(features)[srtd_idx[:N]])
     plt.title('Feature Importance')
-    plt.savefig('Feature Importance', format='png')
+    plt.savefig('Feature Importance'+'.png', format='png')
     
 base_path = '/home/gogqou/git/CDIPS-Project/HMP_Dataset/'
 
