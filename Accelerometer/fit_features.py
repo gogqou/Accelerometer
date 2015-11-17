@@ -120,10 +120,10 @@ def mycv(clf,df,cv=None,nfolds=5,w=None,N=20):
     target = le.transform(target)
     data = np.array(df.drop('target',axis=1))
     features = np.array(df.drop('target',axis=1).columns)
-    ll = []
-    acc = []
-    fi = []
-    cm = []
+    ll = [] #logloss
+    acc = [] #accuracy score
+    fi = [] #feature importance
+    cm = [] #confusion matrix
     if cv is None:
         cv = StratifiedKFold(target,n_folds=nfolds)
     for train_idx, valid_idx in cv:
@@ -216,7 +216,6 @@ def show_conf_mat(cvstats, datasetname):
     plt.gcf().colorbar(im,cax=cax)
     plt.savefig('Confusion Matrix'+datasetname+'.png', format='png')
 def show_feat_importance(cvstats,N=20):
-    #fig=plt.figure()
     fi,features = cvstats['fi'],cvstats['features']
     fi,fistd = fi.mean(axis=0),fi.std(axis=0)
     sc = max(fi)
@@ -226,7 +225,6 @@ def show_feat_importance(cvstats,N=20):
     N = min(N,len(fi))
     pos = (np.arange(N) + 0.5)[::-1]
     _=plt.barh(pos,fi[srtd_idx[:N]],align='center')
-    #plt.barh(pos,fi[srtd_idx[:N]],align='center')
     plt.yticks(pos,np.array(features)[srtd_idx[:N]])
     plt.title('Feature Importance')
     plt.savefig('Feature Importance'+'.png', format='png')
@@ -268,6 +266,7 @@ def main():
     plt.figure()
     show_conf_mat(cvstats, '_Raw')
     print 'raw confusion matrix'
+    print 'Accuracy Score:'+cvstats['acc']
     df['target'] = df['target'].apply(lambda x: group_dict[x])
     print 'grouped activities' 
     cvstats = mycv(clf,df,nfolds=5)
