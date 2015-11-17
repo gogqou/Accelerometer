@@ -93,8 +93,8 @@ def get_features(trial, downsample=1):
     plt.plot(data[:,1])
     fig.add_subplot(313)
     plt.plot(data[:,2])
-    if path.isfile(trial['activity']+trial['iden']+'.png')is False:
-        plt.savefig(trial['activity']+trial['iden']+'.png', format='png')
+    if path.isfile('Graphs/'+trial['activity']+trial['iden']+'.png')is False:
+        plt.savefig('Graphs/'+ trial['activity']+'_'+trial['iden']+'.png', format='png')
         print 'saved '+trial['activity']+'_'+trial['iden']+'.png'
 
     plt.close()
